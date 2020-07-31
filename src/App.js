@@ -1,25 +1,66 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useRef, useCallback } from "react";
+import TodoListTemplate from "./components/js/TodoListTemplate";
+import Form from "./components/js/Form";
+import TodoItemList from "./components/js/TodoItemList";
 
 function App() {
+  const id = useRef(2);
+  const [input, setInput] = useState("");
+  const [todos, setTodos] = useState([
+    { id: 0, content: "리액트를 공부하자0", isComplete: false },
+    { id: 1, content: "리액트를 공부하자1", isComplete: true },
+  ]);
+
+  const onKeyPress = (e) => {
+    if (e.key === "Enter") onCreate();
+  };
+
+  const onCreate = () => {
+    const todo = {
+      id: id.current,
+      content: input,
+      isComplete: false,
+    };
+    setTodos(todos.concat(todo));
+    id.current++;
+    setInput("");
+  };
+
+  const onChange = (e) => {
+    setInput(e.target.value);
+  };
+
+  const onToggle = useCallback(
+    (id) => {
+      setTodos(
+        todos.map((todo) =>
+          todo.id === id ? { ...todo, isComplete: !todo.isComplete } : todo
+        )
+      );
+    },
+    [todos]
+  );
+
+  const onRemove = useCallback(
+    (id) => {
+      setTodos(todos.filter((todo) => todo.id !== id));
+    },
+    [todos]
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <TodoListTemplate
+      form={
+        <Form
+          value={input}
+          onChange={onChange}
+          onCreate={onCreate}
+          onKeyPress={onKeyPress}
+        />
+      }
+    >
+      <TodoItemList todos={todos} onToggle={onToggle} onRemove={onRemove} />
+    </TodoListTemplate>
   );
 }
 
