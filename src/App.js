@@ -1,9 +1,13 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import TodoListTemplate from "./components/js/TodoListTemplate";
 import Form from "./components/js/Form";
 import TodoItemList from "./components/js/TodoItemList";
 
 function App() {
+
+  useEffect(() => {
+    handleInitInfo();
+  })
 
   const id = useRef(2);
   const [input, setInput] = useState("");
@@ -14,10 +18,14 @@ function App() {
   ]);*/
   const [todos, setTodos] = useState([]);
 
+
   const handleInitInfo = () => {
-    fetch("/api/todos").then(res => res.json()).then(todos => setTodos(todos))
-    .catch(err => console.log(err))
-  }
+    console.log("here");
+		fetch("/api/todos")
+			.then(res => res.json())
+			.then(todos => setTodos(todos))
+			.catch(err => console.log(err))
+	}
 
   const onKeyPress = (e) => {
     if (e.key === "Enter") onCreate();
